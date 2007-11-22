@@ -1,14 +1,16 @@
 package hr.ja.openextern.popup.actions;
 
+import hr.ja.openextern.Commands;
+
 import java.io.File;
+import java.text.ParseException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
-import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jdt.internal.core.Openable;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
@@ -18,27 +20,50 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 
 	private IWorkbenchPart targetPart;
 	private ISelection selection;
-	
-	public boolean execCommand(String command) {
-		return true;
+
+	public boolean execCommand(String command, String openName) {
+
+		String selectedPath = getSelectedFolderPath(selection);
+		if (selectedPath == null) {
+			MessageDialog.openError(targetPart.getSite().getShell(),
+					"Error kod otvaranja "+ openName, "Nemogu otvoriti folder");
+			return false;
+		}
+		File file = new File(selectedPath);
+		if (!file.exists()) {
+			MessageDialog.openError(targetPart.getSite().getShell(),
+					"Error kod otvaranja " + openName, "Path ne postoji: " + file);
+			return false;
+		}
+
+		if (file.isFile()) {
+			selectedPath = file.getParent();
+		}
+
+		try {
+			String parseCommand = Commands.parse(command, selectedPath);
+			ExecutorCommand.executeCommand(parseCommand);
+			return true;
+		} catch (ParseException e) {
+			MessageDialog.openError(targetPart.getSite().getShell(),
+					"Error kod otvaranja "+ openName, e.getMessage());
+			return false;
+		}
+
 	}
-	
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+		this.targetPart = targetPart;
 
-		
 	}
 
 	abstract public void run(IAction action);
-		
-		
 
 	public void selectionChanged(IAction action, ISelection selection) {
-		// TODO Auto-generated method stub
-		
+		this.selection = selection;
 	}
-	
-	public static String getSelectedFolderPath(ISelection selection) {
+
+	public String getSelectedFolderPath(ISelection selection) {
 		if (selection instanceof IStructuredSelection) {
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
 
@@ -47,51 +72,36 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 							+ sel.getClass());
 			if (sel instanceof PlatformObject) {
 				PlatformObject p = (PlatformObject) sel;
-				IResource adapter = (IResource) p.getAdapter(IResource.class);
-				IPath loc = adapter.getLocation();
-				if (loc != null) {
-					return loc.toOSString();
-				}
+				IResource resource = (IResource) p.getAdapter(IResource.class);
+				return getPath(resource);
 			}
 
 			if (sel instanceof IResource) {
 				IResource res = (IResource) sel;
-				IPath loc = res.getLocation();
-				if (loc != null) {
-					return loc.toOSString();
+				return getPath(res);
+
+			}
+			if (sel instanceof IAdaptable) {
+				IAdaptable ad = (IAdaptable) sel;
+				IResource resource = (IResource) ad.getAdapter(IResource.class);
+				if (resource != null) {
+					return getPath(resource);
 				}
 
 			}
 
 		}
-		
+
 		System.err.println("cant find path: ");
 		return null;
+	}
 
-		// try {
-		// IAdaptable adaptable = null;
-		// String selected = "unknown";
-		// if (selection instanceof IStructuredSelection) {
-		// adaptable = (IAdaptable) ((IStructuredSelection) selection)
-		// .getFirstElement();
-		// Class<? extends IAdaptable> selectedClass = adaptable.getClass();
-		// if (adaptable instanceof IResource) {
-		// selected = (IResource) adaptable;
-		// } else if (adaptable instanceof PackageFragment
-		// && ((PackageFragment) adaptable)
-		// .getPackageFragmentRoot() instanceof JarPackageFragmentRoot) {
-		// this.selected = getJarFile(((PackageFragment) adaptable)
-		// .getPackageFragmentRoot());
-		// } else if (adaptable instanceof JarPackageFragmentRoot) {
-		// this.selected = getJarFile(adaptable);
-		// } else {
-		// this.selected = (IResource) adaptable
-		// .getAdapter(IResource.class);
-		// }
-		// }
-		// } catch (Throwable e) {
-		// EasyExplorePlugin.log(e);
-		// }
+	private String getPath(IResource resource) {
+		IPath loc = resource.getLocation();
+		if (loc != null) {
+			return loc.toOSString();
+		}
+		return null;
 	}
 
 	protected File getJarFile(IAdaptable adaptable) {
