@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            objectClass="org.eclipse.core.runtime.IAdaptable"
+            id="hr.ja.openextern.contribution1">
+         <menu
+               label="Open Extern"
+               path="additions"
+               id="hr.ja.openextern.menu">
+            <separator
+                  name="group_openextern">
+            </separator>
+         </menu>
+         <action
+               class="hr.ja.openextern.popup.actions.OpenFolderAction"
+               enablesFor="1"
+               icon="icon/explore.gif"
+               id="hr.ja.openextern.openFolder"
+               label="Open folder"
+               menubarPath="hr.ja.openextern.menu/group_openextern"
+               tooltip="Open explorer in this folder">
+         </action>
+         <action
+               class="hr.ja.openextern.popup.actions.OpenShellAction"
+               enablesFor="1"
+               icon="icon/command.gif"
+               id="hr.ja.openextern.openCommand"
+               label="Open command"
+               menubarPath="hr.ja.openextern.menu/group_openextern"
+               tooltip="Open command in this folder">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="hr.ja.openextern.preferences.OpenExternPreferencePage"
+            id="hr.ja.openextern.preferences.OpenExternPreferencePage"
+            name="Open extern">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="hr.ja.openextern.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>
