@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/hr.ja.penextern_feature_1.0.0.jar" id="hr.ja.penextern_feature" version="1.0.0" os="linux,macosx,win32">
+      <category name="Open_extern"/>
+   </feature>
+   <category-def name="Open_extern" label="Open Extern">
+      <description>
+         Open extern plugin
+      </description>
+   </category-def>
+</site>
