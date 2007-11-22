@@ -18,7 +18,7 @@
          <action
                class="hr.ja.openextern.popup.actions.OpenFolderAction"
                enablesFor="1"
-               icon="icon/explore.gif"
+               icon="icon/folder_open.gif"
                id="hr.ja.openextern.openFolder"
                label="Open folder"
                menubarPath="hr.ja.openextern.menu/group_openextern"
@@ -27,7 +27,7 @@
          <action
                class="hr.ja.openextern.popup.actions.OpenShellAction"
                enablesFor="1"
-               icon="icon/command.gif"
+               icon="icon/command_open.gif"
                id="hr.ja.openextern.openCommand"
                label="Open command"
                menubarPath="hr.ja.openextern.menu/group_openextern"
