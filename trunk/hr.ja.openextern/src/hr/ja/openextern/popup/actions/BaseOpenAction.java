@@ -1,6 +1,8 @@
 package hr.ja.openextern.popup.actions;
 
+import hr.ja.openextern.Activator;
 import hr.ja.openextern.Commands;
+import hr.ja.openextern.OS;
 
 import java.io.File;
 import java.text.ParseException;
@@ -25,14 +27,17 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 
 		String selectedPath = getSelectedFolderPath(selection);
 		if (selectedPath == null) {
-			MessageDialog.openError(targetPart.getSite().getShell(),
-					"Error kod otvaranja "+ openName, "Nemogu otvoriti folder");
+			MessageDialog
+					.openError(targetPart.getSite().getShell(),
+							"Error kod otvaranja " + openName,
+							"Nemogu otvoriti folder");
 			return false;
 		}
 		File file = new File(selectedPath);
 		if (!file.exists()) {
 			MessageDialog.openError(targetPart.getSite().getShell(),
-					"Error kod otvaranja " + openName, "Path ne postoji: " + file);
+					"Error kod otvaranja " + openName, "Path ne postoji: "
+							+ file);
 			return false;
 		}
 
@@ -41,12 +46,16 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 		}
 
 		try {
-			String parseCommand = Commands.parse(command, selectedPath);
-			ExecutorCommand.executeCommand(parseCommand);
+			String parseCommand = "";
+//			if (Activator.getDefault().getInitPlugin().getOS() != OS.WINDOWS) {
+				parseCommand = Commands.parse(command, selectedPath);
+				
+			ExecutorCommand
+					.executeCommand(parseCommand, new File(selectedPath));
 			return true;
 		} catch (ParseException e) {
 			MessageDialog.openError(targetPart.getSite().getShell(),
-					"Error kod otvaranja "+ openName, e.getMessage());
+					"Error kod otvaranja " + openName, e.getMessage());
 			return false;
 		}
 
