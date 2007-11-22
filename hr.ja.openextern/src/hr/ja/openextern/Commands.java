@@ -11,7 +11,7 @@ public class Commands {
 	public static final String OPEN_FOLDER_LINUX_GNOME = "nautilus "+ PATH_VAR + "";
 	public static final String OPEN_FOLDER_LINUX_KDE = "kfmclient "+ PATH_VAR + "";
 	
-	public static final String OPEN_SHELL_WINDOWS = "cmd +"+ PATH_VAR + "";
+	public static final String OPEN_SHELL_WINDOWS = "cmd.exe /C start";
 	
 	/**
 	 * "color xterm," "regular xterm," and "gnome-terminal" 
@@ -29,7 +29,8 @@ public class Commands {
 			throw new ParseException("Nemoze se parsirati: "+ command, 0);
 		}
 		if(!command.contains(PATH_VAR)) {
-			throw new ParseException("Komanda ne sadrzi string: " +PATH_VAR+ ", command:"+ command, 0);
+			return command;
+//			throw new ParseException("Komanda ne sadrzi string: " +PATH_VAR+ ", command:"+ command, 0);
 		}
 		return command.replace(PATH_VAR, path);
 	}
