@@ -15,8 +15,12 @@
    </copyright>
 
    <license url="http://www.example.com/license">
-      [Enter License Description here.]
+      GPL
    </license>
+
+   <url>
+      <discovery label="Open extern SVN update site" url="http://openextern.googlecode.com/svn/trunk/openextern_update/"/>
+   </url>
 
    <requires>
       <import plugin="org.eclipse.ui"/>
