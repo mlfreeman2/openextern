@@ -29,9 +29,9 @@
                enablesFor="1"
                icon="icon/command_open.gif"
                id="hr.ja.openextern.openCommand"
-               label="Open command"
+               label="Open shell"
                menubarPath="hr.ja.openextern.menu/group_openextern"
-               tooltip="Open command in this folder">
+               tooltip="Open shell in this folder">
          </action>
       </objectContribution>
    </extension>
