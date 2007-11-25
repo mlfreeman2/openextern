@@ -8,15 +8,22 @@ import java.io.File;
 import java.text.ParseException;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.mapping.ResourceMapping;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.jdt.core.IJarEntryResource;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.pde.core.plugin.IPluginModel;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.model.IWorkbenchAdapter;
 
 public abstract class BaseOpenAction implements IObjectActionDelegate {
 
@@ -26,17 +33,18 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 	public boolean execCommand(String command, String openName) {
 
 		String selectedPath = getSelectedFolderPath(selection);
+		
 		if (selectedPath == null) {
 			MessageDialog
 					.openError(targetPart.getSite().getShell(),
-							"Error kod otvaranja " + openName,
-							"Nemogu otvoriti folder");
+							"Error "  + openName,
+							"Path is not find");
 			return false;
 		}
 		File file = new File(selectedPath);
 		if (!file.exists()) {
 			MessageDialog.openError(targetPart.getSite().getShell(),
-					"Error kod otvaranja " + openName, "Path ne postoji: "
+					"Error " + openName, "Path is not find: "
 							+ file);
 			return false;
 		}
@@ -47,15 +55,16 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 
 		try {
 			String parseCommand = "";
-//			if (Activator.getDefault().getInitPlugin().getOS() != OS.WINDOWS) {
-				parseCommand = Commands.parse(command, selectedPath);
-				
+			// if (Activator.getDefault().getInitPlugin().getOS() != OS.WINDOWS)
+			// {
+			parseCommand = Commands.parse(command, selectedPath);
+
 			ExecutorCommand
 					.executeCommand(parseCommand, new File(selectedPath));
 			return true;
 		} catch (ParseException e) {
 			MessageDialog.openError(targetPart.getSite().getShell(),
-					"Error kod otvaranja " + openName, e.getMessage());
+					"Error " + openName, e.getMessage());
 			return false;
 		}
 
@@ -72,36 +81,74 @@ public abstract class BaseOpenAction implements IObjectActionDelegate {
 		this.selection = selection;
 	}
 
+	/**
+	 * 
+	 * May return null!!
+	 * @param selection
+	 * @return full path 
+	 */
 	public String getSelectedFolderPath(ISelection selection) {
+		
+		TreeSelection d;
+		
+		
 		if (selection instanceof IStructuredSelection) {
 			Object sel = ((IStructuredSelection) selection).getFirstElement();
-
-			System.out
-					.println("AbstractCommandAction.getSelectedFolderPath() sel: "
-							+ sel.getClass());
+//
+//			System.out
+//					.println("AbstractCommandAction.getSelectedFolderPath() sel: "
+//							+ sel.getClass());
 			if (sel instanceof PlatformObject) {
 				PlatformObject p = (PlatformObject) sel;
 				IResource resource = (IResource) p.getAdapter(IResource.class);
-				return getPath(resource);
+				if (resource != null)
+					return getPath(resource);
 			}
 
 			if (sel instanceof IResource) {
 				IResource res = (IResource) sel;
-				return getPath(res);
+				if (res != null)
+					return getPath(res);
 
 			}
+			
+			if(sel instanceof IJavaElement) {
+				IJavaElement je = (IJavaElement) sel;
+				try {
+					IResource correspondingResource = je.getCorrespondingResource();
+					if(correspondingResource != null)
+					getPath(correspondingResource);
+				} catch (JavaModelException ignore) {
+				}
+			}
+			
+			if(sel instanceof IPluginModel) {
+				IPluginModel mod = (IPluginModel) sel;
+				String installLocation = mod.getInstallLocation();
+				return installLocation;
+			}
+			if(sel instanceof IJarEntryResource) {
+				IJarEntryResource jar = (IJarEntryResource) sel;
+				 IPath fullPath = jar.getFullPath();
+				
+				 return fullPath.makeAbsolute().toOSString();
+			}
+			
 			if (sel instanceof IAdaptable) {
 				IAdaptable ad = (IAdaptable) sel;
+				
 				IResource resource = (IResource) ad.getAdapter(IResource.class);
 				if (resource != null) {
 					return getPath(resource);
 				}
 
 			}
-
+			Activator.getDefault().logError("Can't find path, not implemented " + sel.getClass(), null);
+			return null;
 		}
-
-		System.err.println("cant find path: ");
+		
+		Activator.getDefault().logError("Can't find path, not implemented " + selection.getClass(), null);
+		// System.err.println("cant find path: ");
 		return null;
 	}
 
