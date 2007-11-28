@@ -3,7 +3,7 @@
    <description url="http://openextern.googlecode.com/svn/trunk/openextern_update/">
       Open extern SVN update site
    </description>
-   <feature url="features/hr.ja.penextern_feature_1.0.1.jar" id="hr.ja.penextern_feature" version="1.0.1" os="linux,macosx,win32">
+   <feature url="features/hr.ja.penextern_feature_1.0.2.jar" id="hr.ja.penextern_feature" version="1.0.2" os="linux,macosx,win32">
       <category name="Open_extern"/>
    </feature>
    <category-def name="Open_extern" label="Open Extern">
