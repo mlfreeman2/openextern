@@ -2,7 +2,7 @@
 <feature
       id="hr.ja.penextern_feature"
       label="OpenExtern"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="Janko Diminic"
       os="linux,macosx,win32">
 
@@ -11,7 +11,7 @@
    </description>
 
    <copyright url="http://www.example.com/copyright">
-      GPL
+      ---
    </copyright>
 
    <license url="http://www.example.com/license">
@@ -27,6 +27,7 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.pde.core"/>
    </requires>
 
    <plugin
