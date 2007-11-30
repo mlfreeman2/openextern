@@ -2,7 +2,7 @@
 <feature
       id="hr.ja.penextern_feature"
       label="OpenExtern"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="Janko Diminic"
       os="linux,macosx,win32">
 
